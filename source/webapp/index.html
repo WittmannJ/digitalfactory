@@ -1,49 +1,34 @@
-<html>  
-<head>  
-<title> Download CSV file </title>  
-</head>  
-  
-<script>  
-//create CSV file data in an array  
-var csvFileData = [  
-   ['Alan Walker', 'Singer'],  
-   ['Cristiano Ronaldo', 'Footballer'],  
-   ['Saina Nehwal', 'Badminton Player'],  
-   ['Arijit Singh', 'Singer'],  
-   ['Terence Lewis', 'Dancer']  
-];  
-    
-//create a user-defined function to download CSV file   
-function download_csv_file() {  
-  
-    //define the heading for each row of the data  
-    var csv = 'Name,Profession\n';  
-      
-    //merge the data with CSV  
-    csvFileData.forEach(function(row) {  
-            csv += row.join(',');  
-            csv += "\n";  
-    });  
-   
-    //display the created CSV data on the web browser   
-    document.write(csv);  
-  
-     
-    var hiddenElement = document.createElement('a');  
-    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);  
-    hiddenElement.target = '_blank';  
-      
-    //provide the name for the CSV file to be downloaded  
-    hiddenElement.download = 'Famous Personalities.csv';  
-    hiddenElement.click();  
-}  
-</script>  
-  
-<body>  
-<h3> Click the button to download the CSV file </h3>  
-  
-<!-- create an HTML button to download the CSV file on click -->  
-<button onclick="download_csv_file()"> Download CSV </button>  
-  
-</body>  
-</html> 
+<html>
+
+<body>
+    <table>
+        <tr>
+            <td>API used</td>
+            <td id="moApi"></td>
+        </tr>
+        <tr>
+            <td>linear acceleration (excl. gravity)</td>
+            <td id="moAccel"></td>
+        </tr>
+        <tr>
+            <td>acceleration incl. gravity</td>
+            <td id="moAccelGrav"></td>
+        </tr>
+        <tr>
+            <td>rotation rate</td>
+            <td id="moRotation"></td>
+        </tr>
+        <tr>
+            <td>interval (ms)</td>
+            <td id="moInterval"></td>
+        </tr>
+    </table>
+
+    <p><small>Demo based on <a href="https://www.html5rocks.com/en/tutorials/device/orientation/" target="_blank"
+                rel="noopener">HTML5 Rocks</a> article.</small></p>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
