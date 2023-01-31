@@ -1,7 +1,8 @@
 <html>
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="style.css" />
-    <meta name="viewport" content="width=device-width, user-scalable=no" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style type="text/css">
       html,
@@ -12,6 +13,7 @@
         padding: 0;
       }
     </style>
+    <link href="manifest.json" rel="manifest" />
   </head>
 
   <body>
@@ -113,5 +115,6 @@
     <script src="script.js"></script>
     <script src="chartjs-interop.js"></script>
     <script src="logic.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
   </body>
 </html>
