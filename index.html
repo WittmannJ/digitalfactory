@@ -39,12 +39,36 @@
     </div>
 
     <div id="startRecording">
-      <button onclick="addData()" id="recordButton">Starte neue Aufnahme:</button>
+      <button id="recordButton">Starte neue Aufnahme:</button>
+
+      <!-- The Modal -->
+      <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <p>
+            <b>Aufnahme erfolgreich beendet! </b>
+          </p>
+          <div id="previewRecordedData">
+            <div>
+              <b>Graph:</b>
+            </div>
+            <div>
+              <canvas id="myPreviewChart"></canvas>
+            </div>
+          </div>
+          <p id="rawData"></p>
+
+          <button id="downloadJSON">Als JSON-Datei exportieren</button>
+          
+          <button style="margin-top: 5%" id="closeModalButton">Abbrechen</button>
+        </div>
+      </div>
     </div>
 
     <div id="preview">
       <div>
-        <b>Preview:</b>
+        <b>Graph:</b>
       </div>
       <div>
         <canvas id="myChart"></canvas>
@@ -73,7 +97,6 @@
         <td id="moInterval"></td>
       </tr>
     </table>
-
     <p>
       <small
         >Demo based on
@@ -86,7 +109,7 @@
         article.</small
       >
     </p>
-
+    <script src="globalVariables.js"></script>
     <script src="script.js"></script>
     <script src="chartjs-interop.js"></script>
     <script src="logic.js"></script>
