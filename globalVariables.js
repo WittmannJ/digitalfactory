@@ -132,7 +132,7 @@ var myPreviewChart = new Chart(ctx_preview, {
     labels: labelsPreview,
     datasets: [
       {
-        label: "power of acceleration in m/s^2",
+        label: "x in m/s^2",
         data: dataPreview,
         borderWidth: 1,
       },
