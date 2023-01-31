@@ -1,9 +1,11 @@
 <html>
   <head>
+    <link rel="stylesheet" href="style.css" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="worker.js"></script>
+    
     <style type="text/css">
       html,
       body {
@@ -13,12 +15,13 @@
         padding: 0;
       }
     </style>
-    <link href="manifest.json" rel="manifest" />
   </head>
 
   <body>
     <h1>Recorder</h1>
-    <b>Hinweis: </b>App funktioniert nur auf Google Chrome Android!
+    <!--<button onclick="workerSayHi()">
+      hi
+    </button>-->
 
     <div id="timerSettings">
       <div>
@@ -63,8 +66,10 @@
           <p id="rawData"></p>
 
           <button id="downloadJSON">Als JSON-Datei exportieren</button>
-          
-          <button style="margin-top: 5%" id="closeModalButton">Abbrechen</button>
+
+          <button style="margin-top: 5%" id="closeModalButton">
+            Abbrechen
+          </button>
         </div>
       </div>
     </div>
@@ -79,19 +84,19 @@
     </div>
 
     <table>
-      <tr>
+      <tr style="display:none">
         <td>API used</td>
         <td id="moApi"></td>
       </tr>
-      <tr>
+      <tr style="display:none">
         <td>linear acceleration (excl. gravity)</td>
         <td id="moAccel"></td>
       </tr>
-      <tr>
+      <tr style="display:none">
         <td>acceleration incl. gravity</td>
         <td id="moAccelGrav"></td>
       </tr>
-      <tr>
+      <tr style="display:none">
         <td>rotation rate</td>
         <td id="moRotation"></td>
       </tr>
