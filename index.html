@@ -1,127 +1,134 @@
 <html>
-  <head>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
-    
-    <style type="text/css">
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
 
-  <body>
-    <h1>Recorder</h1>
-    <!--<button onclick="workerSayHi()">
+<head>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+
+  <style type="text/css">
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Recorder</h1>
+  <!--<button onclick="workerSayHi()">
       hi
     </button>-->
 
-    <div id="timerSettings">
-      <div>
-        <b>Timer setzen</b>
-      </div>
-
-      <form name="TimerSettings">
-        <label
-          >Starte Aufnahme:
-          <select name="timerDuration" size="9">
-            <option value="0">Sofort</option>
-            <option value="1">nach 1 Sekunde</option>
-            <option value="2">nach 2 Sekunden</option>
-            <option value="3">nach 3 Sekunden</option>
-            <option value="4">nach 4 Sekunden</option>
-            <option value="5">nach 5 Sekunden</option>
-            <option value="10">nach 10 Sekunden</option>
-          </select>
-        </label>
-      </form>
+  <div id="timerSettings">
+    <div>
+      <b>Timer setzen</b>
     </div>
 
-    <div id="startRecording">
-      <button id="recordButton">Starte neue Aufnahme:</button>
+    <form name="TimerSettings">
+      <label>Starte Aufnahme:
+        <select name="timerDuration" size="9">
+          <option value="0">Sofort</option>
+          <option value="1">nach 1 Sekunde</option>
+          <option value="2">nach 2 Sekunden</option>
+          <option value="3">nach 3 Sekunden</option>
+          <option value="4">nach 4 Sekunden</option>
+          <option value="5">nach 5 Sekunden</option>
+          <option value="10">nach 10 Sekunden</option>
+        </select>
+      </label>
+    </form>
+  </div>
 
-      <!-- The Modal -->
-      <div id="myModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <p>
-            <b>Aufnahme erfolgreich beendet! </b>
-          </p>
-          <div id="previewRecordedData">
-            <div>
-              <b>Graph:</b>
-            </div>
-            <div>
-              <canvas id="myPreviewChart"></canvas>
-            </div>
+  <div id="startRecording">
+    <button id="recordButton">Starte neue Aufnahme:</button>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>
+          <b>Aufnahme erfolgreich beendet! </b>
+        </p>
+        <div id="previewRecordedData">
+          <div>
+            <b>Graph:</b>
           </div>
-          <p id="rawData"></p>
-
-          <button id="downloadJSON">Als JSON-Datei exportieren</button>
-
-          <button style="margin-top: 5%" id="closeModalButton">
-            Abbrechen
-          </button>
+          <div>
+            <canvas id="myPreviewChart"></canvas>
+          </div>
         </div>
+        <p id="rawData"></p>
+
+        <button id="downloadJSON">Als JSON-Datei exportieren</button>
+
+        <button style="margin-top: 5%" id="closeModalButton">
+          Abbrechen
+        </button>
       </div>
     </div>
+  </div>
 
-    <div id="preview">
-      <div>
-        <b>Graph:</b>
-      </div>
-      <div>
-        <canvas id="myChart"></canvas>
-      </div>
+  <div id="preview">
+    <div>
+      <b>Graph:</b>
     </div>
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
 
-    <table>
-      <tr style="display:none">
-        <td>API used</td>
-        <td id="moApi"></td>
-      </tr>
-      <tr style="display:none">
-        <td>linear acceleration (excl. gravity)</td>
-        <td id="moAccel"></td>
-      </tr>
-      <tr style="display:none">
-        <td>acceleration incl. gravity</td>
-        <td id="moAccelGrav"></td>
-      </tr>
-      <tr style="display:none">
-        <td>rotation rate</td>
-        <td id="moRotation"></td>
-      </tr>
-      <tr>
-        <td>interval (ms)</td>
-        <td id="moInterval"></td>
-      </tr>
-    </table>
-    <p>
-      <small
-        >Demo based on
-        <a
-          href="https://www.html5rocks.com/en/tutorials/device/orientation/"
-          target="_blank"
-          rel="noopener"
-          >HTML5 Rocks</a
-        >
-        article.</small
-      >
-    </p>
-    <script src="chart.min.js" defer></script>
-    <script src="worker.js" defer></script>
-    <script src="globalVariables.js" defer></script>
-    <script src="script.js" defer></script>
-    <script src="logic.js" defer></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
-  </body>
+  <table>
+    <tr style="display:none">
+      <td>API used</td>
+      <td id="moApi"></td>
+    </tr>
+    <tr style="display:none">
+      <td>linear acceleration (excl. gravity)</td>
+      <td id="moAccel"></td>
+    </tr>
+    <tr style="display:none">
+      <td>acceleration incl. gravity</td>
+      <td id="moAccelGrav"></td>
+    </tr>
+    <tr style="display:none">
+      <td>rotation rate</td>
+      <td id="moRotation"></td>
+    </tr>
+    <tr>
+      <td>interval (ms)</td>
+      <td id="moInterval"></td>
+    </tr>
+  </table>
+  <p>
+    <small>Demo based on
+      <a href="https://www.html5rocks.com/en/tutorials/device/orientation/" target="_blank" rel="noopener">HTML5
+        Rocks</a>
+      article.</small>
+  </p>
+  <p>
+    <small>
+      <b>
+        Disclaimer:
+      </b>
+      App funktioniert aktuell nur auf Smartphones (verfügen über einen Beschleunigungssensor)
+      und nur auf Browsern welche in der Tabelle "Browser compatibility" in folgender Quelle gelistet sind:
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Accelerometer#browser_compatibility">Link</a>
+    </small>
+
+  </p>
+
+  <script src="chart.min.js" defer></script>
+  <script src="worker.js" defer></script>
+  <script src="globalVariables.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="logic.js" defer></script>
+  <script>navigator.serviceWorker.register('service-worker.js');</script>
+</body>
+
 </html>
