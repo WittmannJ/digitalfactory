@@ -2,9 +2,20 @@ var timerValue = null;
 var recordingRunning = false;
 var recordedData = [];
 
+var recordedDataX = [];
+var recordedDataY = [];
+var recordedDataZ = [];
+
 var xData = [];
 var yData = [];
 var zData = [];
+
+function resetRecordedData(){
+  recordedDataX = [];
+  recordedDataY = [];
+  recordedDataZ = [];
+  
+}
 
 var intervalElement = document.getElementById("moInterval");
 
@@ -133,6 +144,16 @@ var myPreviewChart = new Chart(ctx_preview, {
     datasets: [
       {
         label: "x in m/s^2",
+        data: dataPreview,
+        borderWidth: 1,
+      },
+      {
+        label: "y in m/s^2",
+        data: dataPreview,
+        borderWidth: 1,
+      },
+      {
+        label: "z in m/s^2",
         data: dataPreview,
         borderWidth: 1,
       },

@@ -52,7 +52,10 @@ function accelerationHandler(acceleration, targetId) {
 
   // store new datapoint if necessary
   if (recordingRunning && remainingDatapointsToBeRecorded > 0) {
-    recordedData.push(x);
+    
+    recordedDataX.push(x);
+    recordedDataY.push(y);
+    recordedDataZ.push(z);
     remainingDatapointsToBeRecorded--;
   } else if (recordingRunning && remainingDatapointsToBeRecorded === 0) {
     endOfRecordingInMilliseconds = Date.now();
@@ -67,6 +70,10 @@ function accelerationHandler(acceleration, targetId) {
   }
 
   //window.addDataXYZ(x, y, z);
+  postDatapointToWorker(x, y, z);
+}
+
+async function postDatapointToWorker(x, y, z){
   worker.postMessage([x,y,z]);
 }
 
@@ -80,7 +87,7 @@ function rotationHandler(rotation) {
   document.getElementById("moRotation").innerHTML = info;
 }
 
-function intervalHandler(interval) {
+async function intervalHandler(interval) {
   intervalElement.innerHTML = interval;
 }
 
@@ -94,17 +101,20 @@ downloadJSON.onclick = function () {
 };
 
 closeModalBtn.onclick = function () {
+  window.resetRecordedData();
   modal.style.display = "none";
 };
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function () {
+  window.resetRecordedData();
   modal.style.display = "none";
 };
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
   if (event.target == modal) {
+    window.resetRecordedData();
     modal.style.display = "none";
   }
 };
@@ -162,7 +172,19 @@ function download_json_file_demo() {
 
 function download_json_file() {
   //var json = JSON.parse(recordedData);
-  var json = JSON.stringify(recordedData);
+  // format: [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]]
+  
+  
+  // create 2-D array with each entry being a subarray containing one reading from each axis => [x0, y0, z0] for the first entry
+  let arr2d = new Array(recordedDataX.length);
+  for (let i = 0; i < arr2d.length; i++){
+    let xi = recordedDataX[i];
+    let yi = recordedDataY[i];
+    let zi = recordedDataZ[i];
+    arr2d[i] = [xi, yi, zi];
+  }
+  
+  var json = JSON.stringify(arr2d);
 
   var timestamp = new Date().getTime();
   filename = `AccelerationData_${timestamp}.json`;
@@ -180,17 +202,22 @@ function download_json_file() {
   document.body.appendChild(downloadLink);
   downloadLink.click();
   modal.style.display = "none";
+  window.resetRecordedData();
 }
+
+
 
 function displayPreviewGraph() {
   let newPreviewLabels = [];
-  recordedData.forEach((datapoint) => {
+  recordedDataX.forEach((datapoint) => {
     newPreviewLabels.push(" ");
   });
 
   myPreviewChart.data.labels = newPreviewLabels;
 
-  myPreviewChart.data.datasets[0].data = recordedData;
+  myPreviewChart.data.datasets[0].data = recordedDataX;
+  myPreviewChart.data.datasets[1].data = recordedDataY;
+  myPreviewChart.data.datasets[2].data = recordedDataZ;
   myPreviewChart.update();
 }
 

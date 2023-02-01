@@ -1,10 +1,10 @@
 <html>
   <head>
     <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="worker.js"></script>
+    
     
     <style type="text/css">
       html,
@@ -117,10 +117,11 @@
         article.</small
       >
     </p>
-    <script src="globalVariables.js"></script>
-    <script src="script.js"></script>
-    <script src="chartjs-interop.js"></script>
-    <script src="logic.js"></script>
+    <script src="chart.min.js" defer></script>
+    <script src="worker.js" defer></script>
+    <script src="globalVariables.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="logic.js" defer></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
   </body>
 </html>
