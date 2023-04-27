@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Accelerometer Demo</title>
+
+    <style>
+        .indicatorDot {
+            width: 30px;
+            height: 30px;
+            background-color: #ffab56;
+            border-radius: 50%;
+            position: fixed;
+        }
+    </style>
+
+
+</head>
+
+<body style="background-color:lightblue;">
+    <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
+        <h1>Get Accelerometer Permissions</h1>
+    </button>
+    <div class="indicatorDot" style="left:30%; top:30%;"></div>
+</body>
+
+<script>
+
+    function getAccel() {        
+        DeviceMotionEvent.requestPermission().then(response => {
+            if (response == 'granted') {
+                console.log("accelerometer permission granted");
+                // Do stuff here
+                alert("granted");
+            }
+            alert(response);
+        });
+    }
+</script>
+
+</html>

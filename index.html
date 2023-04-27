@@ -113,15 +113,27 @@
   </p>
   <p>
     <small>
-      <b>
-        Disclaimer:
-      </b>
-      App funktioniert nur auf Smartphones und speziellen Browsern (<i>Empfehlung:</i> Chrome Android). Weitere Details zur Kompatibilität finden Sie
-      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Accelerometer#browser_compatibility">[hier]</a>
+      <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
+        <h1>Get Accelerometer Permissions</h1>
+      </button>
+      <div class="indicatorDot" style="left:30%; top:30%;"></div>
     </small>
 
   </p>
 
+  <script>
+
+    function getAccel() {
+      DeviceMotionEvent.requestPermission().then(response => {
+        if (response == 'granted') {
+          console.log("accelerometer permission granted");
+          // Do stuff here
+          alert("granted");
+        }
+        alert(response);
+      });
+    }
+  </script>
   <script src="chart.min.js" defer></script>
   <script src="worker.js" defer></script>
   <script src="globalVariables.js" defer></script>
