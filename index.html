@@ -19,7 +19,7 @@
 </head>
 
 <body>
-  <h1>Recorder</h1>
+  <!-- <h1>Godlike</h1> -->
   <!--<button onclick="workerSayHi()">
       hi
     </button>-->
@@ -83,16 +83,17 @@
     </div>
   </div>
 
+
   <table>
-    <tr style="display:none">
+    <tr>
       <td>API used</td>
       <td id="moApi"></td>
     </tr>
-    <tr style="display:none">
+    <tr>
       <td>linear acceleration (excl. gravity)</td>
       <td id="moAccel"></td>
     </tr>
-    <tr style="display:none">
+    <tr  style="display:none" >
       <td>acceleration incl. gravity</td>
       <td id="moAccelGrav"></td>
     </tr>
@@ -111,7 +112,9 @@
         Rocks</a>
       article.</small>
   </p>
-  <p>
+
+  
+  <!-- <p>
     <small>
       <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
         <h1>Get Accelerometer Permissions</h1>
@@ -119,20 +122,11 @@
       <div class="indicatorDot" style="left:30%; top:30%;"></div>
     </small>
 
-  </p>
+  </p> -->
 
   <script>
 
-    function getAccel() {
-      DeviceMotionEvent.requestPermission().then(response => {
-        if (response == 'granted') {
-          console.log("accelerometer permission granted");
-          // Do stuff here
-          alert("granted");
-        }
-        alert(response);
-      });
-    }
+    
   </script>
   <script src="chart.min.js" defer></script>
   <script src="worker.js" defer></script>
@@ -140,6 +134,8 @@
   <script src="script.js" defer></script>
   <script src="logic.js" defer></script>
   <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+  
 </body>
 
 </html>

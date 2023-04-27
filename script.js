@@ -1,9 +1,22 @@
+
+var timeBetweenReadings = 20;
+let lastTimestamp = 0;
+let interval = 1000 / 50;
+
+let browserInfo = detectBrowser();
+
+let browserInfoString = `${browserInfo.name}:${browserInfo.version}`;
+
+if (browserInfoString.includes('afari')) {
+  getAccel(); // get permission to use sensors
+}
+
 if ("LinearAccelerationSensor" in window && "Gyroscope" in window) {
-  document.getElementById("moApi").innerHTML = "Generic Sensor API";
+  document.getElementById("moApi").innerHTML = ("Generic Sensor API " + browserInfoString);
 
   let lastReadingTimestamp;
   let accelerometer = new LinearAccelerationSensor({
-    frequency: sampleRateInHz,
+    frequency: 50,
   });
   accelerometer.addEventListener("reading", (e) => {
     if (lastReadingTimestamp) {
@@ -16,19 +29,50 @@ if ("LinearAccelerationSensor" in window && "Gyroscope" in window) {
   });
   accelerometer.start();
 } else if ("DeviceMotionEvent" in window) {
-  document.getElementById("moApi").innerHTML = "Device Motion API";
+  document.getElementById("moApi").innerHTML = "Device Motion API " + browserInfoString;
 
-  var onDeviceMotion = function (eventData) {
-    //accelerationHandler(eventData.acceleration, 'moAccel');
-    accelerationHandler(eventData.accelerationIncludingGravity, "moAccelGrav");
-    //rotationHandler(eventData.rotationRate);
-    intervalHandler(eventData.interval);
+  var onDeviceMotion;
+  if (false) {
+    onDeviceMotion = function (eventData) {
+      //accelerationHandler(eventData.acceleration, 'moAccel');
+      accelerationHandler(eventData.accelerationIncludingGravity, "moAccelGrav");
+      //rotationHandler(eventData.rotationRate);
+      intervalHandler(eventData.interval);
+    };
+  }
+  onDeviceMotion = function (eventData) {
+    let currentTimestamp = eventData.timeStamp;
+    let difference = currentTimestamp - lastTimestamp
+    if (difference >= interval) {
+      lastTimestamp = currentTimestamp;
+      //accelerationHandler(eventData.acceleration, 'moAccel');
+      accelerationHandler(eventData.acceleration, "moAccel");
+      //rotationHandler(eventData.rotationRate);
+      intervalHandler(difference);
+      if (difference > 20) {
+        interval = interval - 0.01;
+      }
+
+    }
+
   };
 
   window.addEventListener("devicemotion", onDeviceMotion, false);
 } else {
   document.getElementById("moApi").innerHTML =
     "No Accelerometer & Gyroscope API available";
+}
+
+function getAccel() {
+
+  DeviceMotionEvent.requestPermission().then(response => {
+    if (response == 'granted') {
+      console.log("accelerometer permission granted");
+      // Do stuff here
+
+    }
+
+  });
 }
 
 function accelerationHandler(acceleration, targetId) {
@@ -38,11 +82,13 @@ function accelerationHandler(acceleration, targetId) {
   let x = acceleration.x;
   let y = acceleration.y;
   let z = acceleration.z;
+  //alert(acceleration.x);
 
-  //info = xyz.replace("X", acceleration.x && acceleration.x.toFixed(3));
-  //info = info.replace("Y", acceleration.y && acceleration.y.toFixed(3));
-  //info = info.replace("Z", acceleration.z && acceleration.z.toFixed(3));
-  //document.getElementById(targetId).innerHTML = info;
+
+  info = xyz.replace("X", acceleration.x && acceleration.x.toFixed(3));
+  info = info.replace("Y", acceleration.y && acceleration.y.toFixed(3));
+  info = info.replace("Z", acceleration.z && acceleration.z.toFixed(3));
+  document.getElementById(targetId).innerHTML = info;
 
   /*var power = Math.sqrt(
     x ** 2 +
@@ -52,7 +98,7 @@ function accelerationHandler(acceleration, targetId) {
 
   // store new datapoint if necessary
   if (recordingRunning && remainingDatapointsToBeRecorded > 0) {
-    
+
     recordedDataX.push(x);
     recordedDataY.push(y);
     recordedDataZ.push(z);
@@ -73,8 +119,8 @@ function accelerationHandler(acceleration, targetId) {
   postDatapointToWorker(x, y, z);
 }
 
-async function postDatapointToWorker(x, y, z){
-  worker.postMessage([x,y,z]);
+async function postDatapointToWorker(x, y, z) {
+  worker.postMessage([x, y, z]);
 }
 
 function rotationHandler(rotation) {
@@ -173,17 +219,17 @@ function download_json_file_demo() {
 function download_json_file() {
   //var json = JSON.parse(recordedData);
   // format: [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]]
-  
-  
+
+
   // create 2-D array with each entry being a subarray containing one reading from each axis => [x0, y0, z0] for the first entry
   let arr2d = new Array(recordedDataX.length);
-  for (let i = 0; i < arr2d.length; i++){
+  for (let i = 0; i < arr2d.length; i++) {
     let xi = recordedDataX[i];
     let yi = recordedDataY[i];
     let zi = recordedDataZ[i];
     arr2d[i] = [xi, yi, zi];
   }
-  
+
   var json = JSON.stringify(arr2d);
 
   var timestamp = new Date().getTime();
@@ -251,22 +297,23 @@ async function addDataXYZ(x, y, z) {
     numberOfPointsSinceLastUpdate = 0;
     myChart.update();
   }*/
-  
-  
+
+
 
   if (!recordingRunning) {
     myChart.update();
   }
 }
 
-function getRandomNumber(max){
+function getRandomNumber(max) {
   return Math.floor(Math.random() * max);
 }
 
-function workerSayHi(){
+function workerSayHi() {
   let max = 20;
   let x = getRandomNumber(10);
   let y = getRandomNumber(15);
   let z = getRandomNumber(20);
-  worker.postMessage([x,y,z]);
+  worker.postMessage([x, y, z]);
 }
+
