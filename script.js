@@ -7,8 +7,11 @@ let browserInfo = detectBrowser();
 
 let browserInfoString = `${browserInfo.name}:${browserInfo.version}`;
 
+let permissionContainer = document.getElementById("permissionContainer");
+
 if (browserInfoString.includes('afari')) {
-  getAccel(); // get permission to use sensors
+  permissionContainer.style.display = 'initial'
+  getAccel(); // get permission to use sensors 
 }
 
 if ("LinearAccelerationSensor" in window && "Gyroscope" in window) {
@@ -70,7 +73,10 @@ function getAccel() {
       console.log("accelerometer permission granted");
       // Do stuff here
 
+      
+
     }
+    
 
   });
 }

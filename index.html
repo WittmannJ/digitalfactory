@@ -19,10 +19,20 @@
 </head>
 
 <body>
-  <!-- <h1>Godlike</h1> -->
+
   <!--<button onclick="workerSayHi()">
       hi
     </button>-->
+  <p id="permissionContainer" style="display:none">
+    <small>
+      <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
+        <h1>Starte Accelerometer</h1>
+      </button>
+      <div class="indicatorDot" style="left:30%; top:30%;"></div>
+    </small>
+
+  </p>
+
 
   <div id="timerSettings">
     <div>
@@ -93,7 +103,7 @@
       <td>linear acceleration (excl. gravity)</td>
       <td id="moAccel"></td>
     </tr>
-    <tr  style="display:none" >
+    <tr style="display:none">
       <td>acceleration incl. gravity</td>
       <td id="moAccelGrav"></td>
     </tr>
@@ -113,20 +123,12 @@
       article.</small>
   </p>
 
-  
-  <!-- <p>
-    <small>
-      <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
-        <h1>Get Accelerometer Permissions</h1>
-      </button>
-      <div class="indicatorDot" style="left:30%; top:30%;"></div>
-    </small>
 
-  </p> -->
+
 
   <script>
 
-    
+
   </script>
   <script src="chart.min.js" defer></script>
   <script src="worker.js" defer></script>
@@ -135,7 +137,7 @@
   <script src="logic.js" defer></script>
   <script>navigator.serviceWorker.register('service-worker.js');</script>
 
-  
+
 </body>
 
 </html>
