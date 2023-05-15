@@ -184,12 +184,19 @@
 
       var dataInput = document.getElementById('data-input');
 
+      let labelInput = document.getElementById("data-input-label");
+
+
       // Add a listener for the show.bs.modal event on the modal element
       modal.addEventListener('show.bs.modal', function (event) {
         // This function will run when the modal is shown
         // You can add your custom logic here
         console.log('Modal is opened by ' + button.className);
         recordingDurationInDataPoints = Number(localStorage.getItem("data"));
+        let label = localStorage.getItem("localStorageLabel");
+        if(label !== null && label !== undefined){
+          labelInput.value = label;
+        }
         if (Number.isInteger(recordingDurationInDataPoints)) {
           dataInput.value = recordingDurationInDataPoints;
         }
