@@ -1,10 +1,12 @@
 <html>
 
 <head>
-  <link rel="stylesheet" href="style.css" />
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
 
 
   <style type="text/css">
@@ -20,6 +22,9 @@
 
 <body>
 
+  <div class="container">
+
+  <script src="js/bootstrap.bundle.min.js" ></script>
   <!--<button onclick="workerSayHi()">
       hi
     </button>-->
@@ -39,10 +44,10 @@
       <b>Timer setzen</b>
     </div>
 
-    <form name="TimerSettings">
+    <form class="form-control" name="TimerSettings">
       <label>Starte Aufnahme:
-        <select name="timerDuration" size="9">
-          <option value="0">Sofort</option>
+        <select class="form-select form-select-lg mb-1" name="timerDuration" size="1">
+          <option selected value="0">Sofort</option>
           <option value="1">nach 1 Sekunde</option>
           <option value="2">nach 2 Sekunden</option>
           <option value="3">nach 3 Sekunden</option>
@@ -55,7 +60,7 @@
   </div>
 
   <div id="startRecording">
-    <button id="recordButton">Starte neue Aufnahme:</button>
+    <button type="button" class="btn btn btn-primary" id="recordButton">Starte neue Aufnahme:</button>
 
     <!-- The Modal -->
     <div id="myModal" class="modal">
@@ -137,7 +142,7 @@
   <script src="logic.js" defer></script>
   <script>navigator.serviceWorker.register('service-worker.js');</script>
 
-
+</div>
 </body>
 
 </html>
