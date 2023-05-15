@@ -111,7 +111,7 @@ function accelerationHandler(acceleration, targetId) {
     remainingDatapointsToBeRecorded--;
   } else if (recordingRunning && remainingDatapointsToBeRecorded === 0) {
     endOfRecordingInMilliseconds = Date.now();
-    rawData.innerHTML = `recording took ${endOfRecordingInMilliseconds - startOfRecordingInMilliseconds} milliseconds`;
+    rawData.innerHTML = `recording took ${endOfRecordingInMilliseconds - startOfRecordingInMilliseconds} milliseconds (${recordedDataX.length} xyz-datapoints) `;
     recordingRunning = false;
     modal.style.display = "block";
     displayPreviewGraph();
@@ -200,6 +200,8 @@ function startRecordingWithTimer(timerValue) {
     if (distance < 0) {
       clearInterval(x);
       recordButton.innerHTML = "Aufnahme läuft";
+      numberOfDatapointsToBeRecorded = Number(localStorage.getItem("data"));
+      //alert(`recording: ${numberOfDatapointsToBeRecorded} datapoints`);
       startRecordingOfDatapoints(numberOfDatapointsToBeRecorded);
     }
   }, 1000);

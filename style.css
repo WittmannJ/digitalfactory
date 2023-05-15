@@ -1,6 +1,18 @@
-body{
+/* body{
   overflow-y: hidden;
   overflow-x: hidden;
+} */
+
+.settingsButton {
+  /* background-image: url(settings_FILL0_wght400_GRAD0_opsz48.png);
+  /* float:left; */
+  /* background-repeat: no-repeat; */ 
+  /* width: 60px;
+  height: 60px; */
+  height: 100%;
+  width: 100%;
+  padding: 5px;
+
 }
 
 button {

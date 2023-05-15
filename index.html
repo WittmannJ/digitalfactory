@@ -24,43 +24,84 @@
 
   <div class="container">
 
-  <script src="js/bootstrap.bundle.min.js" ></script>
-  <!--<button onclick="workerSayHi()">
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <!--<button onclick="workerSayHi()">
       hi
     </button>-->
-  <p id="permissionContainer" style="display:none">
-    <small>
-      <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
-        <h1>Starte Accelerometer</h1>
-      </button>
-      <div class="indicatorDot" style="left:30%; top:30%;"></div>
-    </small>
+    <p id="permissionContainer" style="display:none">
+      <small>
+        <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
+          <h1>Starte Accelerometer</h1>
+        </button>
+        <div class="indicatorDot" style="left:30%; top:30%;"></div>
+      </small>
 
-  </p>
+    </p>
 
 
-  <div id="timerSettings">
-    <div>
+    <div id="timerSettings">
+      <!-- <div>
       <b>Timer setzen</b>
+    </div> -->
+
+      <div class="container">
+        <div class="row">
+          <div class="col-8">
+            <form class="form-control" name="TimerSettings">
+              <label>Starte Aufnahme:
+                <select class="form-select form-select-lg mb-1" name="timerDuration" size="1">
+                  <option selected>Timer wählen</option>
+                  <option value="0">Sofort</option>
+                  <option value="1">nach 1 Sekunde</option>
+                  <option value="2">nach 2 Sekunden</option>
+                  <option value="3">nach 3 Sekunden</option>
+                  <option value="4">nach 4 Sekunden</option>
+                  <option value="5">nach 5 Sekunden</option>
+                  <option value="10">nach 10 Sekunden</option>
+                </select>
+              </label>
+            </form>
+          </div>
+          <div class="col-4">
+            <button type="button" class="btn btn-warning settingsButton" data-bs-toggle="modal"
+              data-bs-target="#exampleModal">
+              <img src="settings_FILL0_wght400_GRAD0_opsz48.png">
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Aufnahme-Einstellungen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="data-form">
+                  <div class="form-group">
+                    <label for="data-input">Number of datapoints:</label>
+                    <input type="number" class="form-control" id="data-input" value="450" min="1" max="20000">
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="recordButton">Starte neue Aufnahme:</button>
+      </div>
+
+
     </div>
 
-    <form class="form-control" name="TimerSettings">
-      <label>Starte Aufnahme:
-        <select class="form-select form-select-lg mb-1" name="timerDuration" size="1">
-          <option selected value="0">Sofort</option>
-          <option value="1">nach 1 Sekunde</option>
-          <option value="2">nach 2 Sekunden</option>
-          <option value="3">nach 3 Sekunden</option>
-          <option value="4">nach 4 Sekunden</option>
-          <option value="5">nach 5 Sekunden</option>
-          <option value="10">nach 10 Sekunden</option>
-        </select>
-      </label>
-    </form>
-  </div>
 
-  <div id="startRecording">
-    <button type="button" class="btn btn btn-primary" id="recordButton">Starte neue Aufnahme:</button>
 
     <!-- The Modal -->
     <div id="myModal" class="modal">
@@ -87,62 +128,104 @@
         </button>
       </div>
     </div>
-  </div>
 
-  <div id="preview">
-    <div>
-      <b>Graph:</b>
+
+    <div id="preview">
+
+      <div>
+        <canvas id="myChart"></canvas>
+      </div>
     </div>
-    <div>
-      <canvas id="myChart"></canvas>
-    </div>
-  </div>
 
 
-  <table>
-    <tr>
-      <td>API used</td>
-      <td id="moApi"></td>
-    </tr>
-    <tr>
-      <td>linear acceleration (excl. gravity)</td>
-      <td id="moAccel"></td>
-    </tr>
-    <tr style="display:none">
-      <td>acceleration incl. gravity</td>
-      <td id="moAccelGrav"></td>
-    </tr>
-    <tr style="display:none">
-      <td>rotation rate</td>
-      <td id="moRotation"></td>
-    </tr>
-    <tr>
-      <td>interval (ms)</td>
-      <td id="moInterval"></td>
-    </tr>
-  </table>
-  <p>
-    <small>Demo based on
+    <table>
+      <tr>
+        <td>API used</td>
+        <td id="moApi"></td>
+      </tr>
+      <tr>
+        <td>linear acceleration (excl. gravity)</td>
+        <td id="moAccel"></td>
+      </tr>
+      <tr style="display:none">
+        <td>acceleration incl. gravity</td>
+        <td id="moAccelGrav"></td>
+      </tr>
+      <tr style="display:none">
+        <td>rotation rate</td>
+        <td id="moRotation"></td>
+      </tr>
+      <tr>
+        <td>interval (ms)</td>
+        <td id="moInterval"></td>
+      </tr>
+    </table>
+    <p>
+      <!-- <small>Demo based on
       <a href="https://www.html5rocks.com/en/tutorials/device/orientation/" target="_blank" rel="noopener">HTML5
         Rocks</a>
-      article.</small>
-  </p>
+      article.</small> -->
+    </p>
 
 
 
 
-  <script>
+    <script>
 
+      // Get the button element by its data-bs-target attribute
+      var button = document.querySelector('[data-bs-target="#exampleModal"]');
 
-  </script>
-  <script src="chart.min.js" defer></script>
-  <script src="worker.js" defer></script>
-  <script src="globalVariables.js" defer></script>
-  <script src="script.js" defer></script>
-  <script src="logic.js" defer></script>
-  <script>navigator.serviceWorker.register('service-worker.js');</script>
+      // Get the modal element by its id
+      var modal = document.getElementById('exampleModal');
 
-</div>
+      var dataInput = document.getElementById('data-input');
+
+      // Add a listener for the show.bs.modal event on the modal element
+      modal.addEventListener('show.bs.modal', function (event) {
+        // This function will run when the modal is shown
+        // You can add your custom logic here
+        console.log('Modal is opened by ' + button.className);
+        recordingDurationInDataPoints = Number(localStorage.getItem("data"));
+        if (Number.isInteger(recordingDurationInDataPoints)) {
+          dataInput.value = recordingDurationInDataPoints;
+        }
+      });
+      // Get the form element
+      var form = document.getElementById("data-form");
+
+      // Add an event listener to handle the form submission
+      form.addEventListener("submit", function (event) {
+        // Prevent the default form action
+        event.preventDefault();
+
+        // Get the input element
+        var input = document.getElementById("data-input");
+
+        // Get the input value
+        var data = input.value;
+
+        // Store the input value in the localstorage
+        localStorage.setItem("data", data);
+
+        // Display a confirmation message
+        //alert("Data saved successfully!");
+        var myModal = document.getElementById("exampleModal");
+        var d = bootstrap.Modal.getInstance(myModal);
+        d.hide();
+        // var bootstrapModal = new bootstrap.Modal(myModal);
+        // bootstrapModal.close();
+        
+      });
+
+    </script>
+    <script src="chart.min.js" defer></script>
+    <script src="worker.js" defer></script>
+    <script src="globalVariables.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="logic.js" defer></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+  </div>
 </body>
 
 </html>
