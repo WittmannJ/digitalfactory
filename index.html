@@ -83,7 +83,11 @@
                   <div class="form-group">
                     <label for="data-input">Number of datapoints:</label>
                     <input type="number" class="form-control" id="data-input" value="450" min="1" max="20000">
+                    <label for="data-input">Label:</label>
+                    
+                    <input type="text" class="form-control" id="data-input-label" value="default">
                   </div>
+                  <br>
                   <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
               </div>
@@ -201,11 +205,17 @@
         // Get the input element
         var input = document.getElementById("data-input");
 
+        var labelInput = document.getElementById("data-input-label");
+
+        let label = labelInput.value;
+
         // Get the input value
         var data = input.value;
 
         // Store the input value in the localstorage
         localStorage.setItem("data", data);
+
+        localStorage.setItem("localStorageLabel", label);
 
         // Display a confirmation message
         //alert("Data saved successfully!");

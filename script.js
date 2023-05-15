@@ -240,8 +240,10 @@ function download_json_file() {
 
   var json = JSON.stringify(arr2d);
 
+  var label = localStorage.getItem("localStorageLabel");
+
   var timestamp = new Date().getTime();
-  filename = `AccelerationData_${timestamp}.json`;
+  filename = `AccelerationData_${timestamp}_[${label}].json`;
 
   var jsonFile;
   var downloadLink;
