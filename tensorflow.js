@@ -298,106 +298,112 @@ function storeLabels(labels) {
 
 
 async function trainModel(recordings) {
-    var tensorflowButton = document.getElementById("tensorflowButton");
-    tensorflowButton.innerHTML = "start training tensorflow-js model";
-    const xs = tf.tensor2d(recordings.map(r => r.features));
-    const labels = recordings.map(r => r.label);
+    try {
+        alert(tf.getBackend());
+        var tensorflowButton = document.getElementById("tensorflowButton");
+        tensorflowButton.innerHTML = "start training tensorflow-js model";
+        const xs = tf.tensor2d(recordings.map(r => r.features));
+        const labels = recordings.map(r => r.label);
 
-    let ys = oneHotEncode(labels);
+        let ys = oneHotEncode(labels);
 
-    // // Convert labels to one-hot encoded vectors
-    const uniqueLabels = Array.from(new Set(labels));
-    // console.log("uniqueLabels");
-    // console.log(uniqueLabels);
-    // alert(uniqueLabels);
-    // let oneHotEncodedLabels = labels.map(label => uniqueLabels.map(ul => ul === label ? 1 : 0));
-    // const ys = tf.tensor2d(
-    //     oneHotEncodedLabels
-    // );
+        // // Convert labels to one-hot encoded vectors
+        const uniqueLabels = Array.from(new Set(labels));
+        // console.log("uniqueLabels");
+        // console.log(uniqueLabels);
+        // alert(uniqueLabels);
+        // let oneHotEncodedLabels = labels.map(label => uniqueLabels.map(ul => ul === label ? 1 : 0));
+        // const ys = tf.tensor2d(
+        //     oneHotEncodedLabels
+        // );
 
-    console.log(ys);
-    ys.print();
+        console.log(ys);
+        ys.print();
 
-    // Define the model architecture
-    const model = tf.sequential();
-    model.add(tf.layers.dense({ units: 32, activation: 'relu', inputShape: [15] }));
-    model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
-    model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
-    model.add(tf.layers.dense({ units: 4, activation: 'relu' }));
-    model.add(tf.layers.dense({ units: uniqueLabels.length, activation: 'softmax' }));
+        // Define the model architecture
+        const model = tf.sequential();
+        model.add(tf.layers.dense({ units: 32, activation: 'relu', inputShape: [15] }));
+        model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 4, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: uniqueLabels.length, activation: 'softmax' }));
 
-    // Compile the model
-    model.compile({ loss: 'categoricalCrossentropy', optimizer: 'adam', metrics: ['accuracy'] });
+        // Compile the model
+        model.compile({ loss: 'categoricalCrossentropy', optimizer: 'adam', metrics: ['accuracy'] });
 
-    // Define a variable to store the start time
-    let startTime;
-    var progressBar = document.querySelector(".progress-bar");
-    progressBar.setAttribute("aria-valuenow", 0);
-    progressBar.style.width = 0 + "%";
-    progressBar.textContent = 0 + "%";
+        // Define a variable to store the start time
+        let startTime;
+        var progressBar = document.querySelector(".progress-bar");
+        progressBar.setAttribute("aria-valuenow", 0);
+        progressBar.style.width = 0 + "%";
+        progressBar.textContent = 0 + "%";
 
-    // Define a custom callback function
-    const printCallback = new tf.CustomCallback({
-        // Implement the onTrainBegin method
-        onTrainBegin: () => {
-            // Get the current time in milliseconds
-            startTime = performance.now();
-        },
-        // Implement the onEpochEnd method
-        onEpochEnd: (epoch, logs) => {
-            // Get the current time in milliseconds
-            let currentTime = performance.now();
-            // Calculate the elapsed time in seconds
-            let elapsedTime = (currentTime - startTime) / 1000;
-            // Get the loss value from the logs object
-            let loss = logs.loss;
-            // Print the epoch number, elapsed time and loss value
-            var tensorflowButton = document.getElementById("tensorflowButton");
-            tensorflowButton.innerHTML = `training in progress - Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`;
-            console.log(`Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`);
-            let newValue = ((epoch + 1) / 20) * 100;
-            progressBar.setAttribute("aria-valuenow", newValue);
-            progressBar.style.width = newValue + "%";
-            // Set the new text of the progress bar
-            progressBar.textContent = newValue + "%";
-            //alert(`Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`);
-        }
-    });
+        // Define a custom callback function
+        const printCallback = new tf.CustomCallback({
+            // Implement the onTrainBegin method
+            onTrainBegin: () => {
+                // Get the current time in milliseconds
+                startTime = performance.now();
+            },
+            // Implement the onEpochEnd method
+            onEpochEnd: (epoch, logs) => {
+                // Get the current time in milliseconds
+                let currentTime = performance.now();
+                // Calculate the elapsed time in seconds
+                let elapsedTime = (currentTime - startTime) / 1000;
+                // Get the loss value from the logs object
+                let loss = logs.loss;
+                // Print the epoch number, elapsed time and loss value
+                var tensorflowButton = document.getElementById("tensorflowButton");
+                tensorflowButton.innerHTML = `training in progress - Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`;
+                console.log(`Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`);
+                let newValue = ((epoch + 1) / 20) * 100;
+                progressBar.setAttribute("aria-valuenow", newValue);
+                progressBar.style.width = newValue + "%";
+                // Set the new text of the progress bar
+                progressBar.textContent = newValue + "%";
+                //alert(`Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`);
+            }
+        });
 
 
-    model.summary();
+        model.summary();
 
-    // Train the model
-    const history = await model.fit(xs, ys, { epochs: 20, callbacks: [printCallback] });
-    console.log(history.history.loss);
+        // Train the model
+        const history = await model.fit(xs, ys, { epochs: 20, callbacks: [printCallback] });
+        console.log(history.history.loss);
 
-    const result = model.evaluate(xs, ys);
+        const result = model.evaluate(xs, ys);
 
-    // Print the accuracy
-    const accuracy = result[1].dataSync()[0]; // result[1] is the accuracy metric
-    console.log('Accuracy: ' + accuracy);
-    let performanceContainer = document.getElementById("modelPerformance");
-    //performanceContainer.innerHTML = 'Accuracy: ' + accuracy
+        // Print the accuracy
+        const accuracy = result[1].dataSync()[0]; // result[1] is the accuracy metric
+        console.log('Accuracy: ' + accuracy);
+        let performanceContainer = document.getElementById("modelPerformance");
+        //performanceContainer.innerHTML = 'Accuracy: ' + accuracy
 
-    var tensorflowButton = document.getElementById("tensorflowButton");
-    tensorflowButton.innerHTML = `Done with training! Achieved accuracy: ${accuracy}. Click to train a new model!`;
-    tensorflowButton.disabled = false;
-    // Make predictions with the trained model
-    const predictions = model.predict(xs);
-    predictions.print();
-    let results = oneHotDecode(predictions);
-    console.log(results);
-    // const predictedLabels = tf.argMax(predictions, axis = 1).dataSync();
+        var tensorflowButton = document.getElementById("tensorflowButton");
+        tensorflowButton.innerHTML = `Done with training! Achieved accuracy: ${accuracy}. Click to train a new model!`;
+        tensorflowButton.disabled = false;
+        // Make predictions with the trained model
+        const predictions = model.predict(xs);
+        predictions.print();
+        let results = oneHotDecode(predictions);
+        console.log(results);
+        // const predictedLabels = tf.argMax(predictions, axis = 1).dataSync();
 
-    // // Convert predicted labels to their corresponding class names
-    // //const predictedClasses = predictedLabels.map(labelIndex => uniqueLabels[labelIndex]);
-    // const predictedClasses = mapLabels(predictedLabels);
+        // // Convert predicted labels to their corresponding class names
+        // //const predictedClasses = predictedLabels.map(labelIndex => uniqueLabels[labelIndex]);
+        // const predictedClasses = mapLabels(predictedLabels);
 
-    // // Print the predicted classes
-    // console.log(predictedClasses);
+        // // Print the predicted classes
+        // console.log(predictedClasses);
 
-    const saveResult = await model.save('localstorage://my-model-1')
-    console.log(saveResult)
+        const saveResult = await model.save('localstorage://my-model-1')
+        console.log(saveResult)
+    } catch (error){
+        alert(`error! ${error}`);
+    }
+
 }
 function mapLabels(predictedLabels) {
     // Define an object that stores the mapping of values to classes

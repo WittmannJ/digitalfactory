@@ -9,7 +9,10 @@ let browserInfoString = `${browserInfo.name}:${browserInfo.version}`;
 
 let permissionContainer = document.getElementById("permissionContainer");
 
+tf.setBackend('wasm');
 if (browserInfoString.includes('afari')) {
+  //alert(tf.getBackend());
+
   permissionContainer.style.display = 'initial'
   getAccel(); // get permission to use sensors 
 }
