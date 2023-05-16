@@ -299,7 +299,7 @@ function storeLabels(labels) {
 
 async function trainModel(recordings) {
     try {
-        alert(tf.getBackend());
+        //alert(tf.getBackend());
         var tensorflowButton = document.getElementById("tensorflowButton");
         tensorflowButton.innerHTML = "start training tensorflow-js model";
         const xs = tf.tensor2d(recordings.map(r => r.features));
