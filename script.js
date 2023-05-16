@@ -121,9 +121,163 @@ function accelerationHandler(acceleration, targetId) {
     recordButton.innerHTML = "Starte neue Aufnahme";
   }
 
+  tensorflowdata = addXYZ( tensorflowdata, [x,y,z]);
+
   //window.addDataXYZ(x, y, z);
   postDatapointToWorker(x, y, z);
 }
+
+// This function applies a 50 Hz low-pass filter on a two dimensional array of acceleration data
+// The array should have the form [[x1,y1,z1], [x2,y2,z2], ...] where each element is a number
+// The function returns a new array with the filtered data
+// The function uses a simple finite impulse response (FIR) filter with a fixed coefficient
+// For more information on FIR filters, see https://stackoverflow.com/questions/35530/what-are-high-pass-and-low-pass-filters
+
+function lowPassFilter(data) {
+  // Check if the input is a valid array
+  if (!Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
+  // Define the filter coefficient (this can be adjusted for different cutoff frequencies)
+  var kFilteringFactor = 0.9;
+
+  // Initialize the output array and the previous filtered value
+  var output = [];
+  var prev = [0, 0, 0];
+
+  // Loop through the input array
+  for (var i = 0; i < data.length; i++) {
+    // Check if the current element is a valid array of three numbers
+    if (!Array.isArray(data[i]) || data[i].length !== 3 || data[i].some(isNaN)) {
+      return null;
+    }
+
+    // Apply the filter formula to each axis
+    var x = data[i][0] * kFilteringFactor + prev[0] * (1 - kFilteringFactor);
+    var y = data[i][1] * kFilteringFactor + prev[1] * (1 - kFilteringFactor);
+    var z = data[i][2] * kFilteringFactor + prev[2] * (1 - kFilteringFactor);
+
+    // Store the filtered value in the output array
+    output.push([x, y, z]);
+
+    // Update the previous filtered value
+    prev = [x, y, z];
+  }
+
+  // Return the output array
+  return output;
+}
+
+
+function addXYZ(array, point) {
+  let mldisplay = document.getElementById("mlresult");
+  // Check if the point is a valid xyz-datapoint of form [1.0,2.0,3.0]
+  if (Array.isArray(point) && point.length === 3 && point.every(x => typeof x === 'number')) {
+    // Copy the original array to avoid mutating it
+    let newArray = [...array];
+    // Check if the array is full
+    if (newArray.length === 50) {
+      // Remove the first element (the oldest one)
+      newArray.shift();
+    }
+    // Add the new point at the end of the array
+    newArray.push(point);
+    if(hostedTensorflowModel !== undefined){
+      newArrayFiltered = lowPassFilter(newArray);
+      let extractedFeaturesOfPoint = extractFeatures(newArrayFiltered);
+      
+      // let Xs = arrayToTensor2d(extractedFeaturesOfPoint);
+      // let prediction = hostedTensorflowModel.predict(Xs);
+      // prediction = tf.argMax(prediction, axis = 1).dataSync();
+
+      let Xs = tf.tensor(extractedFeaturesOfPoint, [1, 15]);
+      let prediction = hostedTensorflowModel.predict(Xs);
+      let result = oneHotDecode(prediction);
+      //const index = prediction.argMax(-1).dataSync()[0];
+      
+      if(result !== undefined && result !== null){
+        mldisplay.innerHTML = `${result}`;
+      }
+    }
+    // Return the new array
+    return newArray;
+  } else {
+    // Throw an error if the point is not valid
+    throw new Error('Invalid xyz-datapoint');
+  }
+}
+
+// This function takes an array of 15 values and returns a tensor2d object
+// The tensor2d object can be used as a parameter for the model.predict method
+// The function assumes that the array has a valid length and contains numeric values
+function arrayToTensor2d(array) {
+  // Create a new tensor1d from the array
+  let tensor1d = tf.tensor1d(array);
+  // Reshape the tensor1d into a tensor2d with shape [1, 15]
+  let tensor2d = tensor1d.reshape([1, 15]);
+  // Return the tensor2d object
+  return tensor2d;
+}
+
+function extractFeatures(data) {
+  // Initialize an empty array to store the features
+  let features = [];
+
+  // Loop through each axis (x, y and z)
+  for (let i = 0; i < 3; i++) {
+      // Initialize variables to store the sum, mean, variance, standard deviation, minimum, maximum and range of the current axis
+      let sum = 0;
+      let mean = 0;
+      let variance = 0;
+      let std = 0;
+      let min = Infinity;
+      let max = -Infinity;
+      let range = 0;
+
+      // Loop through each value of the current axis
+      for (let j = 0; j < data.length; j++) {
+          // Get the current value
+          let value = data[j][i];
+
+          // Update the sum
+          sum += value;
+
+          // Update the minimum and maximum
+          if (value < min) {
+              min = value;
+          }
+          if (value > max) {
+              max = value;
+          }
+      }
+
+      // Calculate the mean
+      mean = sum / data.length;
+
+      // Loop through each value of the current axis again
+      for (let j = 0; j < data.length; j++) {
+          // Get the current value
+          let value = data[j][i];
+
+          // Update the variance
+          variance += Math.pow(value - mean, 2);
+      }
+
+      // Calculate the standard deviation
+      std = Math.sqrt(variance / data.length);
+
+      // Calculate the range
+      range = max - min;
+
+      // Push the features of the current axis to the array
+      features.push(mean, std, min, max, range);
+  }
+
+  // Return the array of features
+  return features;
+}
+
 
 async function postDatapointToWorker(x, y, z) {
   worker.postMessage([x, y, z]);

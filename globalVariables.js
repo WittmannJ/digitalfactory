@@ -24,6 +24,14 @@ var remainingDatapointsToBeRecorded = 0;
 var sampleRateInHz = 50;
 recordingDurationInSeconds = 3;
 
+var hostedTensorflowModel = undefined;
+
+var tensorflowdata = new Array(50);
+
+for(i = 0; i < tensorflowdata.length; i++){
+  tensorflowdata[i] = [0.0,0.0,0.0];
+}
+
 numberOfDatapointsToBeRecorded = sampleRateInHz * recordingDurationInSeconds;
 var recordingButtonText = "";
 // Get the modal

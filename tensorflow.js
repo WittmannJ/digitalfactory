@@ -1,4 +1,24 @@
+// A javascript method that can reverse the one-hot encoding in a tensor2d object to get the original labels
 
+function oneHotDecode(tensor) {
+    // Get the array representation of the tensor
+    let array = tensor.arraySync();
+    // Get the stored labels from the localstorage of the browser
+    let labels = JSON.parse(localStorage.getItem("labels"));
+    // Create an empty array to store the decoded labels
+    let decoded = [];
+    // Loop through each vector in the array
+    for (let vector of array) {
+        // Find the index of the element with the highest probability (1)
+        let index = vector.indexOf(Math.max(...vector));
+        // Get the label at that index from the stored labels
+        let label = labels[index];
+        // Push the label to the decoded array
+        decoded.push(label);
+    }
+    // Return the decoded array
+    return decoded;
+}
 // async function processFiles() {
 //     const fileInput = document.getElementById('fileInput');
 //     const files = fileInput.files;
@@ -50,7 +70,52 @@
 // }
 
 
+// This function applies a 50 Hz low-pass filter on a two dimensional array of acceleration data
+// The array should have the form [[x1,y1,z1], [x2,y2,z2], ...] where each element is a number
+// The function returns a new array with the filtered data
+// The function uses a simple finite impulse response (FIR) filter with a fixed coefficient
+// For more information on FIR filters, see https://stackoverflow.com/questions/35530/what-are-high-pass-and-low-pass-filters
+
+function lowPassFilter(data) {
+    // Check if the input is a valid array
+    if (!Array.isArray(data) || data.length === 0) {
+        return null;
+    }
+
+    // Define the filter coefficient (this can be adjusted for different cutoff frequencies)
+    var kFilteringFactor = 0.9;
+
+    // Initialize the output array and the previous filtered value
+    var output = [];
+    var prev = [0, 0, 0];
+
+    // Loop through the input array
+    for (var i = 0; i < data.length; i++) {
+        // Check if the current element is a valid array of three numbers
+        if (!Array.isArray(data[i]) || data[i].length !== 3 || data[i].some(isNaN)) {
+            return null;
+        }
+
+        // Apply the filter formula to each axis
+        var x = data[i][0] * kFilteringFactor + prev[0] * (1 - kFilteringFactor);
+        var y = data[i][1] * kFilteringFactor + prev[1] * (1 - kFilteringFactor);
+        var z = data[i][2] * kFilteringFactor + prev[2] * (1 - kFilteringFactor);
+
+        // Store the filtered value in the output array
+        output.push([x, y, z]);
+
+        // Update the previous filtered value
+        prev = [x, y, z];
+    }
+
+    // Return the output array
+    return output;
+}
+
 async function processFiles() {
+    var tensorflowButton = document.getElementById("tensorflowButton");
+    tensorflowButton.innerHTML = "running pre-processing";
+    tensorflowButton.disabled = true;
     const fileInput = document.getElementById('fileInput');
     const files = fileInput.files;
     const recordings = [];
@@ -82,8 +147,10 @@ async function processFiles() {
                     const end = start + 50;
                     const recording = recordingsData.slice(start, end);
 
+                    recordingFiltered = lowPassFilter(recording);
+
                     // Extract suitable features (you need to implement this part)
-                    const features = extractFeatures(recording);
+                    const features = extractFeatures(recordingFiltered);
 
                     // Create a training sample
                     const trainingSample = {
@@ -192,15 +259,61 @@ function extractFeatures(data) {
     return features;
 }
 
+// A javascript method that can apply one-hot encoding on an array containing labels and transforms the array into a tensor2d object
+function oneHotEncode(labels) {
+    storeLabels(labels);
+    // Get the number of unique labels
+    let numLabels = [...new Set(labels)].length;
+    // Create an empty array to store the encoded vectors
+    let encoded = [];
+    // Loop through each label
+    for (let label of labels) {
+        // Create a zero-filled vector of length numLabels
+        let vector = new Array(numLabels).fill(0);
+        // Find the index of the label in the sorted set of unique labels
+        let index = [...new Set(labels)].sort().indexOf(label);
+        // Set the value at that index to 1
+        vector[index] = 1;
+        // Push the vector to the encoded array
+        encoded.push(vector);
+    }
+    // Convert the encoded array into a tensor2d object
+    let tensor = tf.tensor2d(encoded);
+    // Return the tensor
+    return tensor;
+}
+
+
+
+// Store the necessary variables of the one-hot encoder in the localstorage of the browser
+function storeLabels(labels) {
+    // Get the sorted set of unique labels from the array
+    let uniqueLabels = [...new Set(labels)].sort();
+    // Convert the set into a JSON string
+    let jsonString = JSON.stringify(uniqueLabels);
+    // Store the string in the localstorage with the key "labels"
+    localStorage.setItem("labels", jsonString);
+}
+
+
+
 async function trainModel(recordings) {
+    var tensorflowButton = document.getElementById("tensorflowButton");
+    tensorflowButton.innerHTML = "start training tensorflow-js model";
     const xs = tf.tensor2d(recordings.map(r => r.features));
     const labels = recordings.map(r => r.label);
 
-    // Convert labels to one-hot encoded vectors
+    let ys = oneHotEncode(labels);
+
+    // // Convert labels to one-hot encoded vectors
     const uniqueLabels = Array.from(new Set(labels));
-    const ys = tf.tensor2d(
-        labels.map(label => uniqueLabels.map(ul => ul === label ? 1 : 0))
-    );
+    // console.log("uniqueLabels");
+    // console.log(uniqueLabels);
+    // alert(uniqueLabels);
+    // let oneHotEncodedLabels = labels.map(label => uniqueLabels.map(ul => ul === label ? 1 : 0));
+    // const ys = tf.tensor2d(
+    //     oneHotEncodedLabels
+    // );
 
     console.log(ys);
     ys.print();
@@ -218,6 +331,10 @@ async function trainModel(recordings) {
 
     // Define a variable to store the start time
     let startTime;
+    var progressBar = document.querySelector(".progress-bar");
+    progressBar.setAttribute("aria-valuenow", 0);
+    progressBar.style.width = 0 + "%";
+    progressBar.textContent = 0 + "%";
 
     // Define a custom callback function
     const printCallback = new tf.CustomCallback({
@@ -235,8 +352,15 @@ async function trainModel(recordings) {
             // Get the loss value from the logs object
             let loss = logs.loss;
             // Print the epoch number, elapsed time and loss value
+            var tensorflowButton = document.getElementById("tensorflowButton");
+            tensorflowButton.innerHTML = `training in progress - Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`;
             console.log(`Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`);
-            alert(`Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`);
+            let newValue = ((epoch + 1) / 20) * 100;
+            progressBar.setAttribute("aria-valuenow", newValue);
+            progressBar.style.width = newValue + "%";
+            // Set the new text of the progress bar
+            progressBar.textContent = newValue + "%";
+            //alert(`Epoch ${epoch + 1}: ${elapsedTime.toFixed(2)}s - loss: ${loss.toFixed(4)}`);
         }
     });
 
@@ -252,20 +376,28 @@ async function trainModel(recordings) {
     // Print the accuracy
     const accuracy = result[1].dataSync()[0]; // result[1] is the accuracy metric
     console.log('Accuracy: ' + accuracy);
-    alert('Accuracy: ' + accuracy);
+    let performanceContainer = document.getElementById("modelPerformance");
+    //performanceContainer.innerHTML = 'Accuracy: ' + accuracy
 
+    var tensorflowButton = document.getElementById("tensorflowButton");
+    tensorflowButton.innerHTML = `Done with training! Achieved accuracy: ${accuracy}. Click to train a new model!`;
+    tensorflowButton.disabled = false;
     // Make predictions with the trained model
     const predictions = model.predict(xs);
     predictions.print();
-    console.log(predictions);
-    const predictedLabels = tf.argMax(predictions, axis = 1).dataSync();
+    let results = oneHotDecode(predictions);
+    console.log(results);
+    // const predictedLabels = tf.argMax(predictions, axis = 1).dataSync();
 
-    // Convert predicted labels to their corresponding class names
-    //const predictedClasses = predictedLabels.map(labelIndex => uniqueLabels[labelIndex]);
-    const predictedClasses = mapLabels(predictedLabels);
+    // // Convert predicted labels to their corresponding class names
+    // //const predictedClasses = predictedLabels.map(labelIndex => uniqueLabels[labelIndex]);
+    // const predictedClasses = mapLabels(predictedLabels);
 
-    // Print the predicted classes
-    console.log(predictedClasses);
+    // // Print the predicted classes
+    // console.log(predictedClasses);
+
+    const saveResult = await model.save('localstorage://my-model-1')
+    console.log(saveResult)
 }
 function mapLabels(predictedLabels) {
     // Define an object that stores the mapping of values to classes
@@ -310,4 +442,27 @@ function mapLabels(predictedLabels) {
     //const mappedLabels = predictedLabels.map((label) => labelMap[label]);
     // Return the new array of mapped labels
     return newLabels;
+}
+
+async function loadModel() {
+    // Get the checkbox element
+    let checkbox = document.getElementById("load-model");
+    // Get the status element
+    let status = document.getElementById("status");
+    // If the checkbox is checked
+    if (true) {
+        // Try to load the model from localstorage
+        try {
+            hostedTensorflowModel = await tf.loadLayersModel("localstorage://my-model-1");
+            hostedTensorflowModel.summary();
+            // Display a success message
+            status.innerHTML = "Model loaded successfully!";
+        } catch (error) {
+            // Display an error message
+            status.innerHTML = "Error loading model: " + error.message;
+        }
+    } else {
+        // Clear the status message
+        status.innerHTML = "";
+    }
 }
